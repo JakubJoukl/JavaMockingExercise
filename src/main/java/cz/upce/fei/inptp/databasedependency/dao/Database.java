@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 /**
  * Database wrapper.
  */
-public class Database {
+public class Database implements AbstractDatabase {
 
     private static Database instance;
     private Connection connection;

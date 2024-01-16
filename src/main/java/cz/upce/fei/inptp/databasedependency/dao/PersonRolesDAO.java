@@ -1,5 +1,6 @@
 package cz.upce.fei.inptp.databasedependency.dao;
 
+import com.google.inject.Inject;
 import cz.upce.fei.inptp.databasedependency.entity.PersonRole;
 import cz.upce.fei.inptp.databasedependency.entity.Person;
 import cz.upce.fei.inptp.databasedependency.entity.Role;
@@ -13,7 +14,13 @@ import java.util.logging.Logger;
 /**
  * DAO object for PersonRole entity.
  */
-public class PersonRolesDAO implements DAO<PersonRole> {
+public class PersonRolesDAO implements IPersonRolesDAO {
+    private PersonDAO personDAO;
+
+    @Inject
+    public PersonRolesDAO(PersonDAO personDAO){
+        this.personDAO = personDAO;
+    }
 
     @Override
     public void save(PersonRole object) {
@@ -36,7 +43,7 @@ public class PersonRolesDAO implements DAO<PersonRole> {
         try {
             Statement st = Database.getInstance().createStatement();
 
-            Person person = new PersonDAO().load(parameters);
+            Person person = personDAO.load(parameters);
             if (person == null) {
                 return null;
             }

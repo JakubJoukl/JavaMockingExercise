@@ -1,7 +1,10 @@
 package cz.upce.fei.inptp.databasedependency.business;
 
+import com.google.inject.Inject;
+import cz.upce.fei.inptp.databasedependency.dao.IPersonDAO;
 import cz.upce.fei.inptp.databasedependency.dao.PersonRolesDAO;
 import cz.upce.fei.inptp.databasedependency.dao.PersonDAO;
+import cz.upce.fei.inptp.databasedependency.dao.IPersonRolesDAO;
 import cz.upce.fei.inptp.databasedependency.entity.PersonRole;
 import cz.upce.fei.inptp.databasedependency.entity.Person;
 import cz.upce.fei.inptp.databasedependency.entity.Role;
@@ -10,14 +13,25 @@ import cz.upce.fei.inptp.databasedependency.entity.Role;
  * Authorization service. User is authorized to access specified part of system,
  * if he has required access directly to specified part, or to upper level part.
  */
-public class AuthorizationService {
+public class AuthorizationService implements IAuthorizationService {
 
-    private PersonDAO persondao;
-    private PersonRolesDAO personRolesDao;
+    private IPersonDAO persondao;
+    private IPersonRolesDAO personRolesDao;
 
-    public AuthorizationService() {
-        this.persondao = new PersonDAO();
-        this.personRolesDao = new PersonRolesDAO();
+    @Override
+    public void setPersonDao(PersonDAO personDao) {
+        this.persondao = personDao;
+    }
+
+    @Override
+    public void setPersonRolesDao(PersonRolesDAO personRolesDao) {
+        this.personRolesDao = personRolesDao;
+    }
+
+    @Inject
+    public AuthorizationService(PersonDAO personDAO, IPersonRolesDAO personRolesDao) {
+        this.persondao = personDAO;
+        this.personRolesDao = personRolesDao;
     }
 
     // TODO: add tests
@@ -30,6 +44,7 @@ public class AuthorizationService {
     // TODO: Authorize(person, "/section/subsection", rw) - PersonRole([Role("/section/subsection", admin)]) - pass
     // TODO: Authorize(person, "/section/subsection", rw) - PersonRole([Role("/section", admin)]) - pass
     // TODO: Authorize(person, "/section/subsection", rw) - PersonRole([Role("/", admin)]) - pass
+    @Override
     public boolean Authorize(Person person, String section, AccessOperationType operationType) {
         String roleWhere = persondao.getRoleWhereStringFor(person);
 
@@ -71,7 +86,8 @@ public class AuthorizationService {
         }
 
         String ret = section.substring(0, section.lastIndexOf("/") + 1);
-        return ret.substring(0, ret.length() - 1);
+        if(ret.equals("/")) return "/";
+        else return ret.substring(0, ret.length() - 1);
     }
 
 }

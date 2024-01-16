@@ -10,8 +10,7 @@ import java.util.logging.Logger;
 /**
  * DAO object for Person entity.
  */
-public class PersonDAO implements DAO<Person> {
-
+public class PersonDAO implements IPersonDAO {
     @Override
     public void save(Person object) {
         try {
@@ -49,6 +48,7 @@ public class PersonDAO implements DAO<Person> {
         return null;
     }
     
+    @Override
     public String getRoleWhereStringFor(Person person) {
         return "id = " + person.getId();
     }
